@@ -13,12 +13,12 @@ function App() {
 
   return (
     <div className="App">
-      {audioFile && <audio controls src={audioFile} />}
       <div className="gridContainer">
         {[...Array(36)].map((_, index) => (
           <div key={index} className="cell" />
         ))}
       </div>{" "}
+      {audioFile && <audio controls src={audioFile} />}
       <input type="file" onChange={handleFileChange} />
     </div>
   );
