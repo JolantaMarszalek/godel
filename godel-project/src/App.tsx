@@ -21,7 +21,7 @@ function App() {
       const updateDataArray = () => {
         analyserNode.getByteFrequencyData(dataArray);
         setAudioData(new Uint8Array(dataArray));
-        requestAnimationFrame(updateDataArray);
+        // requestAnimationFrame(updateDataArray);
       };
 
       audioElement.play();
@@ -39,18 +39,20 @@ function App() {
   return (
     <div className="App">
       <div className="gridContainer">
-        {audioData &&
-          Array.from(audioData)
-            .map((value, index) => (
-              <div
-                key={index}
-                className="cell"
-                style={{ height: `${value}px`, backgroundColor: "red" }}
-              />
-            ))
-            .slice(0, 36)}{" "}
+        {[...Array(36)].map((_, index) => (
+          <div
+            key={index}
+            className="cell"
+            style={{
+              backgroundColor: audioData
+                ? `rgba(255, 0, 0, ${audioData[index] / 255})`
+                : "rgba(255, 0, 0, 0.1)",
+            }}
+          />
+        ))}
       </div>
       <input type="file" onChange={handleFileChange} />
+      {audioFile && <audio controls src={audioFile} />}
     </div>
   );
 }
