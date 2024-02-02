@@ -79,10 +79,9 @@ function App() {
                   className="cell"
                   style={{
                     backgroundColor:
-                      // invertedValue > 128
-                      // ?
-                      `rgba(0, 100, 0, ${invertedValue / 255})`,
-                    // : "rgba(255, 255, 255, 1)",
+                      invertedValue > 128
+                        ? `rgba(0, 100, 0, ${invertedValue / 255})`
+                        : "rgba(255, 255, 255, 1)",
                   }}
                 />
               );
