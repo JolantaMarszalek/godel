@@ -56,9 +56,15 @@ function App() {
             }}
           />
         ))}
-      </div>{" "}
-      {audioFile && <audio controls src={audioFile} />}
-      <input type="file" onChange={handleFileChange} />
+      </div>
+      <div style={{ margin: "10px" }}>
+        {audioFile && <audio controls src={audioFile} />}
+      </div>
+      <input
+        type="file"
+        onChange={handleFileChange}
+        style={{ margin: "10px" }}
+      />
     </div>
   );
 }
