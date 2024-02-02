@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  /* background-color: white; */
+  margin-top: 100px;
 }
 
 .gridContainer {
@@ -12,6 +12,7 @@
   grid-template-rows: repeat(6, 1fr);
   width: 500px;
   height: 500px;
+  margin: 10px;
 }
 
 .cell {

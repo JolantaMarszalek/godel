@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// import ReactAudioAnalyser from "react-audio-analyser";
 import "./App.css";
 
 function App() {
@@ -11,24 +10,28 @@ function App() {
       const audioContext = new AudioContext();
       const audioElement = new Audio(audioFile);
       const analyserNode = audioContext.createAnalyser();
-      const sourceNode = audioContext.createMediaElementSource(audioElement);
 
       analyserNode.fftSize = 2048;
 
-      sourceNode.connect(analyserNode);
-      analyserNode.connect(audioContext.destination);
-
-      const dataArray = new Uint8Array(analyserNode.fftSize);
+      const dataArray = new Uint8Array(analyserNode.frequencyBinCount);
 
       const updateDataArray = () => {
         analyserNode.getByteFrequencyData(dataArray);
         setAudioData(new Uint8Array(dataArray));
         console.log(dataArray);
-        // requestAnimationFrame(updateDataArray);
       };
+
+      audioElement.addEventListener("canplay", () => {
+        audioElement.play();
+        updateDataArray();
+      });
 
       audioElement.play();
       updateDataArray();
+
+      const sourceNode = audioContext.createMediaElementSource(audioElement);
+      sourceNode.connect(analyserNode);
+      analyserNode.connect(audioContext.destination);
     }
   }, [audioFile]);
 
@@ -48,14 +51,14 @@ function App() {
             className="cell"
             style={{
               backgroundColor: audioData
-                ? `rgba(255, 0, 0, ${audioData[index] / 255})`
-                : "rgba(255, 0, 0, 0.1)",
+                ? `rgba(152, 255, 152, ${audioData[index] / 255})`
+                : "rgba(152, 255, 152, 0.1)",
             }}
           />
         ))}
-      </div>
-      <input type="file" onChange={handleFileChange} />
+      </div>{" "}
       {audioFile && <audio controls src={audioFile} />}
+      <input type="file" onChange={handleFileChange} />
     </div>
   );
 }
