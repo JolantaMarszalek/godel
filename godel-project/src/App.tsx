@@ -6,6 +6,7 @@ function App() {
   const [audioData, setAudioData] = useState<Uint8Array>(
     new Uint8Array(36).fill(0)
   );
+  const [isAudioSelected, setIsAudioSelected] = useState<boolean>(false); // Dodatkowa zmienna stanu
 
   const animationFrameIdRef = useRef<number | null>(null);
 
@@ -26,6 +27,7 @@ function App() {
     const handleCanPlay = () => {
       if (audioElement) {
         audioElement.play();
+        setIsAudioSelected(true); // Ustawienie, że plik audio został wybrany
         animationFrameIdRef.current = requestAnimationFrame(updateDataArray);
       }
     };
@@ -68,7 +70,13 @@ function App() {
 
   return (
     <div className="App">
-      <div className="gridContainer">
+      <div
+        className="gridContainer"
+        style={{
+          backgroundColor: isAudioSelected
+            ? "rgba(255, 255, 255, 1)"
+            : "rgba(255, 255, 255, 1)",
+        }}>
         {audioData &&
           Array.from(audioData)
             .map((value, index) => {
@@ -79,7 +87,7 @@ function App() {
                   className="cell"
                   style={{
                     backgroundColor:
-                      invertedValue > 128
+                      invertedValue > 128 && isAudioSelected
                         ? `rgba(0, 100, 0, ${invertedValue / 255})`
                         : "rgba(255, 255, 255, 1)",
                   }}
