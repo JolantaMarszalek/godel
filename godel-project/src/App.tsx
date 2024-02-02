@@ -1,37 +1,61 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
 function App() {
   const [audioFile, setAudioFile] = useState<string | null>(null);
-  const [audioData, setAudioData] = useState<Uint8Array | null>(null);
+  const [audioData, setAudioData] = useState<Uint8Array>(
+    new Uint8Array(36).fill(0)
+  );
+
+  const animationFrameIdRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (audioFile) {
-      const audioContext = new AudioContext();
-      const audioElement = new Audio(audioFile);
-      const analyserNode = audioContext.createAnalyser();
+    let audioContext: AudioContext | null = null;
+    let audioElement: HTMLAudioElement | null = null;
+    let analyserNode: AnalyserNode | null = null;
 
-      analyserNode.fftSize = 2048;
-
-      const dataArray = new Uint8Array(analyserNode.frequencyBinCount);
-
-      const updateDataArray = () => {
+    const updateDataArray = () => {
+      if (analyserNode) {
+        const dataArray = new Uint8Array(analyserNode.fftSize);
         analyserNode.getByteFrequencyData(dataArray);
+        // console.log(dataArray);
         setAudioData(new Uint8Array(dataArray));
-        console.log(dataArray);
-      };
+        animationFrameIdRef.current = requestAnimationFrame(updateDataArray);
+      }
+    };
 
-      audioElement.addEventListener("canplay", () => {
+    const handleCanPlay = () => {
+      if (audioElement) {
         audioElement.play();
-        updateDataArray();
-      });
+        animationFrameIdRef.current = requestAnimationFrame(updateDataArray);
+      }
+    };
 
-      audioElement.play();
-      updateDataArray();
-
+    if (audioFile) {
+      audioContext = new AudioContext();
+      audioElement = new Audio(audioFile);
+      analyserNode = audioContext.createAnalyser();
       const sourceNode = audioContext.createMediaElementSource(audioElement);
+
       sourceNode.connect(analyserNode);
       analyserNode.connect(audioContext.destination);
+
+      audioElement.addEventListener("canplay", handleCanPlay);
+
+      return () => {
+        if (audioElement) {
+          audioElement.removeEventListener("canplay", handleCanPlay);
+          audioElement.pause();
+        }
+        if (animationFrameIdRef.current) {
+          cancelAnimationFrame(animationFrameIdRef.current);
+          animationFrameIdRef.current = null;
+        }
+        if (audioContext) {
+          audioContext.close();
+          audioContext = null;
+        }
+      };
     }
   }, [audioFile]);
 
@@ -45,17 +69,18 @@ function App() {
   return (
     <div className="App">
       <div className="gridContainer">
-        {[...Array(36)].map((_, index) => (
-          <div
-            key={index}
-            className="cell"
-            style={{
-              backgroundColor: audioData
-                ? `rgba(152, 255, 152, ${audioData[index] / 255})`
-                : "rgba(152, 255, 152, 0.1)",
-            }}
-          />
-        ))}
+        {audioData &&
+          Array.from(audioData)
+            .map((value, index) => (
+              <div
+                key={index}
+                className="cell"
+                style={{
+                  backgroundColor: `rgba(255, 0, 0, ${value / 255})`,
+                }}
+              />
+            ))
+            .slice(0, 36)}{" "}
       </div>
       <div style={{ margin: "10px" }}>
         {audioFile && <audio controls src={audioFile} />}
