@@ -6,7 +6,7 @@ function App() {
   const [audioData, setAudioData] = useState<Uint8Array>(
     new Uint8Array(36).fill(0)
   );
-  const [isAudioSelected, setIsAudioSelected] = useState<boolean>(false); // Dodatkowa zmienna stanu
+  const [isAudioSelected, setIsAudioSelected] = useState<boolean>(false);
 
   const animationFrameIdRef = useRef<number | null>(null);
 
@@ -27,7 +27,7 @@ function App() {
     const handleCanPlay = () => {
       if (audioElement) {
         audioElement.play();
-        setIsAudioSelected(true); // Ustawienie, że plik audio został wybrany
+        setIsAudioSelected(true);
         animationFrameIdRef.current = requestAnimationFrame(updateDataArray);
       }
     };
