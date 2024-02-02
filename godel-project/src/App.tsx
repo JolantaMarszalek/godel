@@ -13,6 +13,8 @@ function App() {
       const analyserNode = audioContext.createAnalyser();
       const sourceNode = audioContext.createMediaElementSource(audioElement);
 
+      analyserNode.fftSize = 2048;
+
       sourceNode.connect(analyserNode);
       analyserNode.connect(audioContext.destination);
 
@@ -21,6 +23,7 @@ function App() {
       const updateDataArray = () => {
         analyserNode.getByteFrequencyData(dataArray);
         setAudioData(new Uint8Array(dataArray));
+        console.log(dataArray);
         // requestAnimationFrame(updateDataArray);
       };
 
