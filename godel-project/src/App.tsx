@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 
 function App() {
@@ -18,7 +18,6 @@ function App() {
       if (analyserNode) {
         const dataArray = new Uint8Array(analyserNode.fftSize);
         analyserNode.getByteFrequencyData(dataArray);
-        // console.log(dataArray);
         setAudioData(new Uint8Array(dataArray));
         animationFrameIdRef.current = requestAnimationFrame(updateDataArray);
       }
@@ -35,8 +34,9 @@ function App() {
       audioContext = new AudioContext();
       audioElement = new Audio(audioFile);
       analyserNode = audioContext.createAnalyser();
-      const sourceNode = audioContext.createMediaElementSource(audioElement);
+      analyserNode.fftSize = 256;
 
+      const sourceNode = audioContext.createMediaElementSource(audioElement);
       sourceNode.connect(analyserNode);
       analyserNode.connect(audioContext.destination);
 
@@ -71,16 +71,19 @@ function App() {
       <div className="gridContainer">
         {audioData &&
           Array.from(audioData)
-            .map((value, index) => (
-              <div
-                key={index}
-                className="cell"
-                style={{
-                  backgroundColor: `rgba(255, 0, 0, ${value / 255})`,
-                }}
-              />
-            ))
-            .slice(0, 36)}{" "}
+            .map((value, index) => {
+              const invertedValue = 255 - value;
+              return (
+                <div
+                  key={index}
+                  className="cell"
+                  style={{
+                    backgroundColor: `rgba(0, 100, 0, ${invertedValue / 255})`,
+                  }}
+                />
+              );
+            })
+            .slice(0, 36)}
       </div>
       <div style={{ margin: "10px" }}>
         {audioFile && <audio controls src={audioFile} />}
