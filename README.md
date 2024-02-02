@@ -1,1 +1,1 @@
-# godel
+This is GODEL project
